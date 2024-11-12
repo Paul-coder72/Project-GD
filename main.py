@@ -1,9 +1,10 @@
 import pygame
 import random
 
-from variables import *
-from load_bg import *
-from menu_sprite import menu, shop
+from utils.variables import *
+from utils.load_bg import *
+from utils.menu_sprite import menu, shop
+from utils.menu_principal import *
 from levels import level1, level2, level3
 
 pygame.init()
@@ -15,45 +16,15 @@ pygame.display.set_icon(icon)
 
 window = pygame.display.set_mode((1024, 560))
 
+music = -1
+
 wrect = window.get_rect()
 
 background = bg7.convert()
 
 # contenu de la fenetre
         
-button_play = pygame.image.load("assets/img/icons/buttons/play_button.png")
-button_play_pos = button_play.get_rect()
-button_play_pos.center = (512, 280)
-
-button_sprite = pygame.image.load("assets/img/icons/buttons/sprite_button.png")
-button_sprite_pos = button_sprite.get_rect()
-button_sprite_pos.center = (282, 280)
-
-button_editor = pygame.image.load("assets/img/icons/buttons/create_button.png")
-button_editor_pos = button_editor.get_rect()
-button_editor_pos.center = (742, 280)
-
-title = pygame.image.load("assets/img/logos/geometry dash.png")
-title_pos = title.get_rect()
-title_pos.center = (512, 100)
-
-button_back = pygame.image.load("assets/img/icons/buttons/back_button.png")
-button_back_pos = button_back.get_rect()
-button_back_pos.center = (35, 45)
-
-gray_rect = pygame.image.load("assets/img/icons/gray_rect.png")
-gray_rect_pos = gray_rect.get_rect()
-gray_rect_pos.center = (512, 230)
-
-global menu_play
-
 background = pygame.transform.scale(background, (wrect.right, wrect.bottom))
-
-menu_buttons = True
-menu_play = False
-menu_editor = False
-menu_sprite = False
-menu_shop = False
 
 def on_click_play():
     global menu_buttons, menu_play
@@ -80,7 +51,7 @@ def on_click_back():
     menu_shop = False
     menu_buttons = True
 
-    background = bg7.convert()
+    background = bg7
 
 def on_click_shop():
     global menu_buttons, menu_shop, menu_sprite, background
@@ -90,17 +61,22 @@ def on_click_shop():
 
     background = shop.shop_bg.convert()
 
-
 def affichage():
 
     window.blit(background, (0, 0))
+    global music
+    
     if menu_buttons:
         window.blit(button_sprite, button_sprite_pos)
         window.blit(button_editor, button_editor_pos)
         window.blit(button_play, button_play_pos)
         window.blit(title, title_pos)
-        
-    if menu_buttons == False:
+        if music != 0:
+            music = 0
+            pygame.mixer.music.load(homeMusic)
+            pygame.mixer.music.play() 
+            
+    else:
         window.blit(button_back, button_back_pos)
     
     if menu_play:
@@ -116,16 +92,34 @@ def affichage():
 
     if menu_shop:
         window.blit(shop.shop_shelf, shop.shop_shelf_pos)
+        window.blit(shop.shop_deco, shop.shop_deco_pos)
+        window.blit(shop.scratch, shop.scratch_pos)
+        if music != 1:
+            music = 1
+            pygame.mixer.music.load(shopMusic)
+            pygame.mixer.music.play() 
+
 
     pygame.display.update()
-    
+
+def check_music():
+    if not pygame.mixer.music.get_busy():
+        if music == 0:
+            pygame.mixer.music.load(homeMusic)
+            pygame.mixer.music.play()
+        elif music == 1:
+            pygame.mixer.music.load(shopMusic)
+            pygame.mixer.music.play()
+
+clock = pygame.time.Clock()
 
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+    
+        if event.type == pygame.MOUSEBUTTONDOWN:
 
             if menu_buttons:
                 if button_editor_pos.collidepoint(event.pos):
@@ -134,20 +128,21 @@ while running:
                     on_click_play()
                 elif button_sprite_pos.collidepoint(event.pos):
                     on_click_sprite()
-
-            elif not menu_buttons:
+            else:
                 if button_back_pos.collidepoint(event.pos):
                     on_click_back()
             
             if menu_sprite:
                 if menu.shop_button_pos.collidepoint(event.pos):
                     on_click_shop()
-                
+
+    check_music()
 
     pygame.display.flip()
     clock.tick(60)
     
     affichage()
+
 
 
 pygame.quit()
