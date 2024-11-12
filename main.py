@@ -73,17 +73,22 @@ def on_click_sprite():
     menu_sprite = True
 
 def on_click_back():
-    global menu_buttons, menu_play, menu_editor, menu_sprite
+    global menu_buttons, menu_play, menu_editor, menu_sprite, menu_shop, background
     menu_play = False
     menu_editor = False
     menu_sprite = False
+    menu_shop = False
     menu_buttons = True
 
+    background = bg7.convert()
+
 def on_click_shop():
-    global menu_buttons, menu_shop, menu_sprite
+    global menu_buttons, menu_shop, menu_sprite, background
     menu_buttons = False
     menu_sprite = False
     menu_shop = True
+
+    background = shop.shop_bg.convert()
 
 
 def affichage():
@@ -108,6 +113,11 @@ def affichage():
 
     if menu_sprite:
         window.blit(menu.shop_button, menu.shop_button_pos)
+
+    if menu_shop:
+        window.blit(shop.shop_shelf, shop.shop_shelf_pos)
+
+    pygame.display.update()
     
 
 running = True
@@ -125,16 +135,14 @@ while running:
                 elif button_sprite_pos.collidepoint(event.pos):
                     on_click_sprite()
 
-            elif menu_buttons == False:
+            elif not menu_buttons:
                 if button_back_pos.collidepoint(event.pos):
                     on_click_back()
             
-            elif menu_sprite:
+            if menu_sprite:
                 if menu.shop_button_pos.collidepoint(event.pos):
                     on_click_shop()
-
-            
-            
+                
 
     pygame.display.flip()
     clock.tick(60)
