@@ -5,34 +5,18 @@ from utils.variables import *
 from utils.load_bg import *
 from utils.menu_sprite import menu, shop
 from utils.menu_principal import *
-from levels import level1, level2, level3
+from game import *
 
 pygame.init()
-	
-icon = pygame.image.load("assets/icon.ico")
-pygame.display.set_caption("Geometry Dash")
-pygame.display.set_icon(icon)
-
-
-window = pygame.display.set_mode((1024, 560))
-
-music = -1
-
-wrect = window.get_rect()
-
-background = bg7.convert()
 
 # contenu de la fenetre
         
 background = pygame.transform.scale(background, (wrect.right, wrect.bottom))
 
 def on_click_play():
-    global menu_buttons, menu_play
-    global lvl1, lvl2, lvl3, lvl4, lvl5
+    global menu_buttons, jeu_actif
     menu_buttons = False
-    menu_play = True
-
-    lvl1 = True
+    jeu_actif = True
 
 def on_click_editor():
     global menu_buttons
@@ -44,8 +28,8 @@ def on_click_sprite():
     menu_sprite = True
 
 def on_click_back():
-    global menu_buttons, menu_play, menu_editor, menu_sprite, menu_shop, background
-    menu_play = False
+    global menu_buttons, game, menu_editor, menu_sprite, menu_shop, background
+    game = False
     menu_editor = False
     menu_sprite = False
     menu_shop = False
@@ -78,14 +62,9 @@ def affichage():
             
     else:
         window.blit(button_back, button_back_pos)
-    
-    if menu_play:
-        window.blit(gray_rect, gray_rect_pos)
 
-        if lvl1:
-            window.blit(level1.lvl1difficulty, level1.lvl1difficulty_pos)
-            window.blit(level1.lvl1name, level1.lvl1name_pos)
-            window.blit(level1.lvl1rightArrow, level1.lvl1rightArrow_pos)
+    if game:
+        window.blit(button_back, button_back_pos)
 
     if menu_sprite:
         window.blit(menu.shop_button, menu.shop_button_pos)
@@ -146,4 +125,3 @@ while running:
 
 
 pygame.quit()
-
